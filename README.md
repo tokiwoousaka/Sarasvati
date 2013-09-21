@@ -1,7 +1,7 @@
 Sarasvati
 =========
 
-Sarasvati is a audio library wrapper with portaudio.
+Sarasvati is a audio library with portaudio.
 
 install
 -----------------------
