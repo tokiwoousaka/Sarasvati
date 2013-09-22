@@ -25,11 +25,8 @@ data SarasvatiConfig = SarasvatiConfig {
 defaultConfig :: SarasvatiConfig
 defaultConfig = SarasvatiConfig {
   confSampleRate = 44100,
-  confFramesPerBuffer = 3000
+  confFramesPerBuffer = 5000
   }
-
--- helper
-data StreamState = Running | Finished deriving (Show, Eq, Read)
 
 ----------------
 -- api
@@ -67,16 +64,16 @@ outputAction out (v1, v2) i = do
   pokeElemOff out (2 * i + 1) v2
 
 runOutput :: Ptr CFloat -> [(CFloat, CFloat)] -> IO ()
-runOutput out lst = mapM_ (uncurry $ outputAction out) $ zip lst [1..]
+runOutput out lst = mapM_ (uncurry $ outputAction out) $ zip lst [0..]
 
 outputCallback :: SarasvatiConfig -> MVar [(CFloat, CFloat)] -> StreamCallback CFloat CFloat
 outputCallback conf mvar _ _ frames _ out = do
-  let frameLen = fromIntegral $ frames - 1
+  let frameLen = fromIntegral frames
   -- read list data
   list <- readMVar mvar
   (target, next) <- return $ splitAt frameLen list
   -- write to output pointer
-  runOutput out . take frameLen $ target ++ (repeat (0, 0)) 
+  runOutput out target
 
   -- swap user data
   swapMVar mvar next 
@@ -85,6 +82,9 @@ outputCallback conf mvar _ _ frames _ out = do
 
 ----------------
 -- hepler
+
+-- helper
+data StreamState = Running | Finished deriving (Show, Eq, Read)
 
 conv2CFloat :: [(Float, Float)] -> [(CFloat, CFloat)]
 conv2CFloat [] = []
