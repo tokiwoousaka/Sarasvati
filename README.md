@@ -1,20 +1,20 @@
 Sarasvati
 =========
 
-Sarasvati is a audio library with portaudio.
+Sarasvati is an audio library with portaudio.
 
 install
 -----------------------
 
-1. install portaudio for you PC as http://portaudio.com/docs/v19-doxydocs/compile_linux.html
+* install portaudio for you PC as http://portaudio.com/docs/v19-doxydocs/compile_linux.html
 
-2. install portaudio wrapper by cabal
+* install portaudio wrapper by cabal
 
 ```
 $ cabal install portaudio
 ```
 
-3. install this library
+* install this library
 
 ```
 $ cabal configure
@@ -24,7 +24,7 @@ $ cabal install
 sample
 -----------------------
 
-```
+```haskell
 module Main where
 import Data.Monoid 
 import Sound.Sarasvati.Base
