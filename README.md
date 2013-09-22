@@ -26,7 +26,6 @@ sample
 
 ```haskell
 module Main where
-import Data.Monoid 
 import Sound.Sarasvati.Base
 
 sinl :: [Float] 
