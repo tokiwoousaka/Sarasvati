@@ -31,12 +31,12 @@ import Sound.Sarasvati.Base
 sinl :: [Float] 
 sinl = take 100000 . map sin $ [0.0, 0.1..] 
 
-suql :: [Float]
-suql = take 100000 $ cycle (replicate 300 (-1) ++ replicate 300 1)
+squl :: [Float]
+squl = take 100000 $ cycle (replicate 300 (-1) ++ replicate 300 1)
 
 main :: IO ()
 main = do
   sarasvatiOutput defaultConfig $ zip sinl sinl
-  sarasvatiOutput defaultConfig $ zip suql suql
+  sarasvatiOutput defaultConfig $ zip squl squl
   return ()
 ```
