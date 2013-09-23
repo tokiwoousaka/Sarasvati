@@ -8,12 +8,6 @@ How to install
 
 * install portaudio for you PC as http://portaudio.com/docs/v19-doxydocs/compile_linux.html
 
-* install portaudio wrapper by cabal
-
-```
-$ cabal install portaudio
-```
-
 * install this library
 
 ```
@@ -21,7 +15,7 @@ $ cabal configure
 $ cabal install
 ```
 
-how to use
+How to use
 -----------------------
 
 ```haskell
