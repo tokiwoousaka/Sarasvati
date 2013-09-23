@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                sarasvati
-version:             0.2.1.0
+version:             0.2.2.0
 -- synopsis:            
 -- description:         
 homepage:            https://github.com/tokiwoousaka/Sarasvati
@@ -19,6 +19,7 @@ library
   exposed-modules:     
     Sound.Sarasvati, 
     Sound.Sarasvati.Base
+    Sound.Sarasvati.Types
   -- other-modules:       
   build-depends:       
     base ==4.6.*, 

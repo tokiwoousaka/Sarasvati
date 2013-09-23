@@ -1,18 +1,14 @@
-{-# LANGUAGE MultiParamTypeClasses, FunctionalDependencies #-}
-{-# LANGUAGE FlexibleInstances #-}
-module Sound.Sarasvati.Base (
-  SarasvatiConfig(..),
-  Channel(..),
-  ChannelInfo(..),
-  defaultConfig,
-  sarasvatiOutput
+module Sound.Sarasvati.Base
+  ( SarasvatiConfig(..)
+  , defaultConfig
+  , sarasvatiOutput
   ) where
 import Control.Concurrent.MVar
 import Control.Concurrent (threadDelay)
+import Sound.Sarasvati.Types
 import Sound.PortAudio 
 import Foreign.C.Types (CFloat(..))
 import Foreign.Ptr (Ptr)
-import Foreign.Storable (Storable, pokeElemOff)
 
 ----------------
 -- configration 
@@ -55,23 +51,6 @@ runSarasvatiOutput conf lst = do
         if st == Finished 
           then stopStream strm >> return (Right ())
           else streaming stat strm
-
-----------------
--- channel
-
-class (Eq c , Eq h, ChannelInfo h) => Channel c h | c -> h where
-  toChannelInfo :: c -> h
-class Eq c => ChannelInfo c where
-  outAction :: Ptr CFloat -> c -> Int -> IO ()
-
--- stereo
-
-instance Channel (Float, Float) (CFloat, CFloat) where
-  toChannelInfo (v1,v2) = (CFloat v1, CFloat v2)
-instance ChannelInfo (CFloat, CFloat) where
-  outAction out (v1, v2) i = do
-    pokeElemOff out (2 * i) v1
-    pokeElemOff out (2 * i + 1) v2
 
 ----------------
 -- callback function
