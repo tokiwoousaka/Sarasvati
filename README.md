@@ -3,7 +3,7 @@ Sarasvati
 
 Sarasvati is an audio library with portaudio.
 
-install
+How to install
 -----------------------
 
 * install portaudio for you PC as http://portaudio.com/docs/v19-doxydocs/compile_linux.html
@@ -21,7 +21,7 @@ $ cabal configure
 $ cabal install
 ```
 
-sample
+how to use
 -----------------------
 
 ```haskell

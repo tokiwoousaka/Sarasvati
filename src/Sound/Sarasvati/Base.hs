@@ -1,22 +1,22 @@
 {-# LANGUAGE MultiParamTypeClasses, FunctionalDependencies #-}
+{-# LANGUAGE FlexibleInstances #-}
 module Sound.Sarasvati.Base (
   SarasvatiConfig(..),
+  Channel(..),
+  ChannelInfo(..),
   defaultConfig,
   sarasvatiOutput
   ) where
 import Control.Concurrent.MVar
 import Control.Concurrent (threadDelay)
-import Control.Monad
-import Data.Monoid
 import Sound.PortAudio 
 import Foreign.C.Types (CFloat(..))
 import Foreign.Ptr (Ptr)
 import Foreign.Storable (Storable, pokeElemOff)
 
 ----------------
--- type definition
+-- configration 
 
--- api configration
 data SarasvatiConfig = SarasvatiConfig {
   confSampleRate :: Double,
   confFramesPerBuffer :: Int
@@ -31,10 +31,11 @@ defaultConfig = SarasvatiConfig {
 ----------------
 -- api
 
-sarasvatiOutput :: SarasvatiConfig -> [(Float, Float)] -> IO (Either Error ())
-sarasvatiOutput conf lst = withPortAudio $ runSarasvatiOutput conf (conv2CFloat lst)
+sarasvatiOutput :: Channel c h => SarasvatiConfig -> [c] -> IO (Either Error ())
+sarasvatiOutput conf lst = 
+  withPortAudio $ runSarasvatiOutput conf (map toChannelInfo lst)
 
-runSarasvatiOutput :: SarasvatiConfig -> [(CFloat, CFloat)] -> IO (Either Error ())
+runSarasvatiOutput :: ChannelInfo c => SarasvatiConfig -> [c] -> IO (Either Error ())
 runSarasvatiOutput conf lst = do
   -- env
   mstat <- newMVar Running
@@ -56,17 +57,29 @@ runSarasvatiOutput conf lst = do
           else streaming stat strm
 
 ----------------
+-- channel
+
+class (Eq c , Eq h, ChannelInfo h) => Channel c h | c -> h where
+  toChannelInfo :: c -> h
+class Eq c => ChannelInfo c where
+  outAction :: Ptr CFloat -> c -> Int -> IO ()
+
+-- stereo
+
+instance Channel (Float, Float) (CFloat, CFloat) where
+  toChannelInfo (v1,v2) = (CFloat v1, CFloat v2)
+instance ChannelInfo (CFloat, CFloat) where
+  outAction out (v1, v2) i = do
+    pokeElemOff out (2 * i) v1
+    pokeElemOff out (2 * i + 1) v2
+
+----------------
 -- callback function
 
-outputAction :: Ptr CFloat -> (CFloat, CFloat) -> Int -> IO ()
-outputAction out (v1, v2) i = do
-  pokeElemOff out (2 * i) v1
-  pokeElemOff out (2 * i + 1) v2
+runOutput :: ChannelInfo c => Ptr CFloat -> [c] -> IO ()
+runOutput out lst = mapM_ (uncurry $ outAction out) $ zip lst [0..]
 
-runOutput :: Ptr CFloat -> [(CFloat, CFloat)] -> IO ()
-runOutput out lst = mapM_ (uncurry $ outputAction out) $ zip lst [0..]
-
-outputCallback :: SarasvatiConfig -> MVar [(CFloat, CFloat)] -> StreamCallback CFloat CFloat
+outputCallback :: ChannelInfo c => SarasvatiConfig -> MVar [c] -> StreamCallback CFloat CFloat
 outputCallback conf mvar _ _ frames _ out = do
   let frameLen = fromIntegral frames
   -- read list data
@@ -83,9 +96,4 @@ outputCallback conf mvar _ _ frames _ out = do
 ----------------
 -- hepler
 
--- helper
 data StreamState = Running | Finished deriving (Show, Eq, Read)
-
-conv2CFloat :: [(Float, Float)] -> [(CFloat, CFloat)]
-conv2CFloat [] = []
-conv2CFloat ((v1,v2):xs) = (CFloat v1, CFloat v2) : conv2CFloat xs
