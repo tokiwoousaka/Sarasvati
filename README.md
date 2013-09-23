@@ -20,7 +20,7 @@ How to use
 
 ```haskell
 module Main where
-import Sound.Sarasvati.Base
+import Sound.Sarasvati
 
 sinl :: [Float] 
 sinl = take 100000 . map sin $ [0.0, 0.1..] 
