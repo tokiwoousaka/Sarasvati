@@ -6,7 +6,9 @@ Sarasvati is an audio library with portaudio.
 How to install
 -----------------------
 
-* install portaudio for you PC as http://portaudio.com/docs/v19-doxydocs/compile_linux.html
+* install portaudio for your PC.
+
+http://portaudio.com/docs/v19-doxydocs/compile_linux.html
 
 * install this library
 
