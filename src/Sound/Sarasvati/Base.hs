@@ -13,9 +13,9 @@ import Foreign.Ptr (Ptr)
 ----------------
 -- configration 
 
-data SarasvatiConfig = SarasvatiConfig {
-  confSampleRate :: Double,
-  confFramesPerBuffer :: Int
+data SarasvatiConfig = SarasvatiConfig 
+  { confSampleRate :: SampleRate
+  , confFramesPerBuffer :: Int
   }
 
 defaultConfig :: SarasvatiConfig
