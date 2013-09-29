@@ -9,6 +9,7 @@ module Sound.Sarasvati.Types
   , Mixable(..)
   , (/+/)
   ) where
+import Control.DeepSeq
 import Foreign.C.Types (CFloat(..))
 import Foreign.Ptr (Ptr)
 import Foreign.Storable (Storable, pokeElemOff)
@@ -22,7 +23,7 @@ type SampleRate = Double
 ----------------
 -- channels
 
-class (Eq c , Eq h, ChannelInfo h) => Channel c h | c -> h where
+class (NFData c, Eq c , Eq h, ChannelInfo h) => Channel c h | c -> h where
   toChannelInfo :: c -> h
   makeWave :: [Float] -> [c]
   emptyFrame :: c
