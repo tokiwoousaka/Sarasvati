@@ -6,18 +6,18 @@ Sarasvati is an audio library with portaudio.
 Instration
 -----------------------
 
-* install portaudio for your PC
+### Install portaudio for your PC
 
-http://portaudio.com/docs/v19-doxydocs/compile_linux.html
+if you use linux, see http://portaudio.com/docs/v19-doxydocs/compile_linux.html
 
-* install this library from code
+### Install this library from code
 
 ```
 $ cabal configure
 $ cabal install
 ```
 
-* or from hackage
+### Or from hackage
 
 ```
 $ cabal install sarasvati
