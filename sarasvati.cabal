@@ -3,11 +3,11 @@
 
 name:                sarasvati
 version:             0.3.0.0
--- synopsis:            
--- description:         
+synopsis:            audio library.
+description:         an audio library with portaudio.
 homepage:            https://github.com/tokiwoousaka/Sarasvati
--- license:             
--- license-file:        LICENSE
+license:             BSD3
+license-file:        LICENSE
 author:              tune
 maintainer:          tune
 copyright:           Copyright (c) 2013 tune
