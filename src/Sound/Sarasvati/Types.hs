@@ -4,11 +4,13 @@
 module Sound.Sarasvati.Types 
   ( Stereo
   , SampleRate
+  , WavSeq(..)
   , Channel(..)
   , ChannelInfo(..)
   , Mixable(..)
   , (/+/)
   ) where
+import Data.Foldable 
 import Control.DeepSeq
 import Foreign.C.Types (CFloat(..))
 import Foreign.Ptr (Ptr)
@@ -19,6 +21,23 @@ import Foreign.Storable (Storable, pokeElemOff)
 
 type Stereo = (Float, Float)
 type SampleRate = Double
+
+----------------
+-- sequence
+
+class (Foldable w, Functor w) => WavSeq w where
+  wavMatch :: w a -> Maybe (a, Maybe (w a))
+  wavNil :: w a
+  wavSplitAt :: Int -> w a -> (w a, w a)
+  wavFromList :: [a] -> w a
+instance WavSeq [] where
+  wavMatch  []     = Nothing
+  wavMatch  (x:[]) = Just (x, Nothing)
+  wavMatch  (x:xs) = Just (x, Just xs)
+
+  wavNil = []
+  wavSplitAt = splitAt
+  wavFromList = id
 
 ----------------
 -- channels

@@ -1,7 +1,7 @@
 module Sound.Sarasvati.Base
   ( SarasvatiConfig(..)
   , defaultConfig
-  , sarasvatiOutput
+  --, sarasvatiOutput
   ) where
 import Control.Concurrent.MVar
 import Control.Concurrent (threadDelay)
@@ -27,11 +27,13 @@ defaultConfig = SarasvatiConfig {
 ----------------
 -- api
 
-sarasvatiOutput :: Channel c h => SarasvatiConfig -> [c] -> IO (Either Error ())
+sarasvatiOutput :: 
+  (Eq (w h), WavSeq w, Channel c h) => SarasvatiConfig -> w c -> IO (Either Error ())
 sarasvatiOutput conf lst = 
-  withPortAudio $ runSarasvatiOutput conf (map toChannelInfo lst)
+  withPortAudio $ runSarasvatiOutput conf (fmap toChannelInfo lst)
 
-runSarasvatiOutput :: ChannelInfo c => SarasvatiConfig -> [c] -> IO (Either Error ())
+runSarasvatiOutput 
+  :: (Eq (w c), WavSeq w, ChannelInfo c) => SarasvatiConfig -> w c -> IO (Either Error ())
 runSarasvatiOutput conf lst = do
   -- env
   mstat <- newMVar Running
@@ -55,22 +57,29 @@ runSarasvatiOutput conf lst = do
 ----------------
 -- callback function
 
-runOutput :: ChannelInfo c => Ptr CFloat -> [c] -> IO ()
-runOutput out lst = mapM_ (uncurry $ outAction out) $ zip lst [0..]
+runOutput :: (WavSeq w, ChannelInfo c) => Ptr CFloat -> w c -> IO ()
+runOutput out lst = undefined
+  where 
+    runOutput' :: (WavSeq w, ChannelInfo c) => Int -> w c -> IO ()
+    runOutput' i lst = case wavMatch lst of
+      Nothing           -> return ()
+      Just (x, Nothing) -> outAction out x i >> return ()
+      Just (x, Just xs) -> outAction out x i >> runOutput' (i + 1) xs
 
-outputCallback :: ChannelInfo c => SarasvatiConfig -> MVar [c] -> StreamCallback CFloat CFloat
+outputCallback :: (Eq (w c), WavSeq w, ChannelInfo c) 
+  => SarasvatiConfig -> MVar (w c) -> StreamCallback CFloat CFloat
 outputCallback conf mvar _ _ frames _ out = do
   let frameLen = fromIntegral frames
   -- read list data
   list <- readMVar mvar
-  (target, next) <- return $ splitAt frameLen list
+  (target, next) <- return $ wavSplitAt frameLen list
   -- write to output pointer
   runOutput out target
 
   -- swap user data
   swapMVar mvar next 
   -- result value
-  return $ if next == [] then Complete else Continue
+  return $ if next == wavNil then Complete else Continue
 
 ----------------
 -- hepler
