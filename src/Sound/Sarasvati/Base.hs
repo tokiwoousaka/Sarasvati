@@ -1,7 +1,7 @@
 module Sound.Sarasvati.Base
   ( SarasvatiConfig(..)
   , defaultConfig
-  --, sarasvatiOutput
+  , sarasvatiOutput
   ) where
 import Control.Concurrent.MVar
 import Control.Concurrent (threadDelay)
@@ -58,7 +58,7 @@ runSarasvatiOutput conf lst = do
 -- callback function
 
 runOutput :: (WavSeq w, ChannelInfo c) => Ptr CFloat -> w c -> IO ()
-runOutput out lst = undefined
+runOutput out lst = runOutput' 0 lst
   where 
     runOutput' :: (WavSeq w, ChannelInfo c) => Int -> w c -> IO ()
     runOutput' i lst = case wavMatch lst of
