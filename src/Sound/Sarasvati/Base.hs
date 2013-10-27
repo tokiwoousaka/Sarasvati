@@ -19,16 +19,16 @@ data SarasvatiConfig = SarasvatiConfig
   }
 
 defaultConfig :: SarasvatiConfig
-defaultConfig = SarasvatiConfig {
-  confSampleRate = 44100,
-  confFramesPerBuffer = 5000
+defaultConfig = SarasvatiConfig 
+  { confSampleRate = 44100
+  , confFramesPerBuffer = 5000
   }
 
 ---------------
 -- api
 
-sarasvatiOutput :: 
-  (Eq (w h), WavSeq w, Channel c h) => SarasvatiConfig -> w c -> IO (Either Error ())
+sarasvatiOutput 
+  :: (Eq (w h), WavSeq w, Channel c h) => SarasvatiConfig -> w c -> IO (Either Error ())
 sarasvatiOutput conf lst = 
   withPortAudio $ runSarasvatiOutput conf (fmap toChannelInfo lst)
 
