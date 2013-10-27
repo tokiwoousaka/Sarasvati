@@ -30,6 +30,7 @@ class (Foldable w, Functor w) => WavSeq w where
   wavNil :: w a
   wavSplitAt :: Int -> w a -> (w a, w a)
   wavFromList :: [a] -> w a
+  wavLength :: w a -> Int
 instance WavSeq [] where
   wavMatch  []     = Nothing
   wavMatch  (x:[]) = Just (x, Nothing)
@@ -38,6 +39,7 @@ instance WavSeq [] where
   wavNil = []
   wavSplitAt = splitAt
   wavFromList = id
+  wavLength = length
 
 ----------------
 -- channels

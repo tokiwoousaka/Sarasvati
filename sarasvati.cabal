@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                sarasvati
-version:             0.3.0.0
+version:             0.3.1.0
 synopsis:            audio library.
 description:         an audio library with portaudio.
 homepage:            https://github.com/tokiwoousaka/Sarasvati

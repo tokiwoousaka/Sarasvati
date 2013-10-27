@@ -24,7 +24,7 @@ defaultConfig = SarasvatiConfig {
   confFramesPerBuffer = 5000
   }
 
-----------------
+---------------
 -- api
 
 sarasvatiOutput :: 
