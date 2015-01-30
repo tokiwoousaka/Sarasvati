@@ -1,10 +1,12 @@
 {-# LANGUAGE FlexibleInstances #-}
-module Sound.Sarasvati.Base.List.Stereo where
+module Sound.Sarasvati.List.Stereo () where
 import Control.Concurrent.MVar
+import Control.Monad
 import Foreign.C.Types (CFloat(..))
 import Sound.PortAudio 
 import Sound.Sarasvati.Types
 import Foreign.Ptr (Ptr)
+import Foreign.Storable (pokeElemOff)
 
 instance WavSeq [(Float, Float)] where
   sarasvatiOutput conf lst = withPortAudio $ runSarasvatiOutput conf (fmap float2Cfloat lst)
@@ -31,30 +33,26 @@ runSarasvatiOutput conf lst = do
           else streaming stat strm
 
 float2Cfloat :: (Float, Float) -> (CFloat, CFloat)
-float2Cfloat = undefined
+float2Cfloat (x, y) = (CFloat x, CFloat y)
 
 ----------------
 -- callback function
 
 runOutput :: Ptr CFloat -> [(CFloat, CFloat)] -> IO ()
-runOutput out lst = runOutput' 0 lst
-  where 
-    runOutput' :: Int -> [(CFloat, CFloat)] -> IO ()
-    runOutput' i lst = undefined -- case wavMatch lst of
---      Nothing           -> return ()
---      Just (x, Nothing) -> outAction out x i >> return ()
---      Just (x, Just xs) -> outAction out x i >> runOutput' (i + 1) xs
+runOutput out lst = forM_ (zip [0..] lst) $ \(i, (v1, v2)) -> do
+  pokeElemOff out (2 * i) v1
+  pokeElemOff out (2 * i + 1) v2
 
 outputCallback :: SarasvatiConfig -> MVar [(CFloat, CFloat)] -> StreamCallback CFloat CFloat
-outputCallback conf mvar _ _ frames _ out = undefined
---  let frameLen = fromIntegral frames
---  -- read list data
---  list <- readMVar mvar
---  (target, next) <- return $ wavSplitAt frameLen list
---  -- write to output pointer
---  runOutput out target
---
---  -- swap user data
---  swapMVar mvar next 
---  -- result value
---  return $ if next == wavNil then Complete else Continue
+outputCallback conf mvar _ _ frames _ out = do
+  let frameLen = fromIntegral frames
+  -- read list data
+  list <- readMVar mvar
+  (target, next) <- return $ splitAt frameLen list
+  -- write to output pointer
+  runOutput out target
+
+  -- swap user data
+  swapMVar mvar next 
+  -- result value
+  return $ if next == [] then Complete else Continue
