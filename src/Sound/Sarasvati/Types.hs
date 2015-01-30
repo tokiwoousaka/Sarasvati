@@ -1,20 +1,10 @@
 {-# LANGUAGE MultiParamTypeClasses, FunctionalDependencies #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE RankNTypes, FlexibleContexts #-}
-module Sound.Sarasvati.Types 
-  ( -- Stereo
-  -- , SampleRate
-  -- , WavSeq(..)
-  -- , Channel(..)
-  -- , ChannelInfo(..)
-  -- , Mixable(..)
-  -- , (/+/)
-  ) where
+module Sound.Sarasvati.Types where
 import Sound.PortAudio 
 
 type SampleRate = Double
-
-----
 
 data SarasvatiConfig = SarasvatiConfig 
   { confSampleRate :: SampleRate
@@ -28,7 +18,9 @@ defaultConfig = SarasvatiConfig
   }
 
 class WavSeq w where
-  sarasvatiOutput :: SarasvatiConfig -> w c -> IO (Either Error ())
+  sarasvatiOutput :: SarasvatiConfig -> w -> IO (Either Error ())
+
+data StreamState = Running | Finished deriving (Show, Eq, Read)
 
 -- ************************************************************* --
 -- Old
