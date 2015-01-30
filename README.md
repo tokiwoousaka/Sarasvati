@@ -1,6 +1,8 @@
 Sarasvati
 =========
 
+[![Join the chat at https://gitter.im/tokiwoousaka/Sarasvati](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/tokiwoousaka/Sarasvati?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Sarasvati is an audio library with portaudio.
 
 Instration
