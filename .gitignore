@@ -2,3 +2,5 @@ dist/*
 .*
 ,/*
 *.swp
+.cabal-sandbox
+cabal.sandbox.config
